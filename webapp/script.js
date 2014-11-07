@@ -1,4 +1,4 @@
-var app = angular.module('myApp', ['ngRoute', 'ui.bootstrap', 'angulartics', 'angulartics.google.analytics']);
+var app = angular.module('myApp', ['ngRoute', 'ui.bootstrap', 'angulartics', 'angulartics.google.analytics', 'directive.g+signin']);
 
 app.service('RegionService', function ($http, PlayerService, TournamentService, RankingsService) {
     var service = {
@@ -37,7 +37,7 @@ app.service('RegionService', function ($http, PlayerService, TournamentService, 
     return service;
 });
 
-app.service('PlayerService', function ($http) {
+app.service('PlayerService', function () {
     var service = {
         playerList: null,
         getPlayerIdFromName: function (name) {
@@ -53,17 +53,41 @@ app.service('PlayerService', function ($http) {
     return service;
 });
 
-app.service('TournamentService', function ($http) {
+app.service('TournamentService', function () {
     var service = {
         tournamentList: null
     };
     return service;
 });
 
-app.service('RankingsService', function ($http) {
+app.service('RankingsService', function () {
     var service = {
         rankingsList: null
     };
+    return service;
+});
+
+app.service('UserService', function () {
+    var service = {
+        loggedIn: false,
+        authResult: null,
+        idToken: null,
+        email: null,
+        updateWithAuthResult: function (authResult) {
+            console.log('updateWithAuthResult');
+            this.loggedIn = true;
+            this.authResult = authResult;
+            this.idToken = authResult.id_token;
+            this.email = 'test@test.com'; // TODO change
+        },
+        logOut: function () {
+            this.loggedIn = false;
+            this.authResult = null;
+            this.idToken = null;
+            this.email = null;
+        }
+    };
+
     return service;
 });
 
@@ -102,9 +126,31 @@ app.config(['$routeProvider', function($routeProvider) {
     });
 }]);
 
-app.controller("RegionDropdownController", function($scope, $route, RegionService) {
+app.controller("NavbarController", function($scope, $route, RegionService) {
     $scope.regionService = RegionService;
     $scope.$route = $route;
+});
+
+app.controller("UserController", function($scope, $route, UserService) {
+    $scope.userService = UserService;
+    
+    $scope.logOut = function () {
+        console.log('before sign out');
+        gapi.auth.signOut();
+        $scope.userService.logOut();
+        console.log('after sign out');
+    };
+
+    $scope.$on('event:google-plus-signin-success', function (event, authResult) {
+        UserService.updateWithAuthResult(authResult);
+        $scope.$apply();
+        console.log(authResult);
+        console.log(UserService.idToken);
+        // Send login to server or save into cookie
+    });
+    $scope.$on('event:google-plus-signin-failure', function (event, authResult) {
+        // Auth failure or signout detected
+    });
 });
 
 app.controller("RankingsController", function($scope, $http, $routeParams, RegionService, RankingsService) {

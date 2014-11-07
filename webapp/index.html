@@ -14,10 +14,12 @@
         <script src="http://angular-ui.github.io/bootstrap/ui-bootstrap-tpls-0.11.2.js"></script>
         <script src="lib/angulartics.js"></script>
         <script src="lib/angulartics-ga.js"></script>
+        <script src="https://apis.google.com/js/client:platform.js" async defer></script>
+        <script src="lib/google-plus-signin.js"></script>
         <script src="script.js"></script>
     </head>
     <body>
-        <div class="navbar navbar-inverse" role="navigation" ng-controller="RegionDropdownController">
+        <div class="navbar navbar-inverse" role="navigation" ng-controller="NavbarController">
             <div class="navbar-header">
                 <a class="navbar-brand">GAR PR</a>
             </div>
@@ -40,6 +42,18 @@
                     </li>
                 </ul>
                 <ul class="nav navbar-nav navbar-right">
+                    <li class="dropdown" ng-controller="UserController">
+                        <a class="dropdown-toggle">
+                            {{userService.loggedIn ? userService.email : 'Login'}}
+                            <span class="caret"></span>
+                        </a>
+                        <ul class="dropdown-menu" role="menu">
+                            <li ng-show="userService.loggedIn" ng-click="logOut()">Logout</li>
+                            <li ng-hide="userService.loggedIn">
+                                <google-plus-signin clientid="919255380022-ru8qm5jqe3nucmqeoa236g6vl2jukstp.apps.googleusercontent.com">
+                            </li>
+                        </ul>
+                    </li>
                     <li class="dropdown" ng-hide="$route.current.activeTab == 'about'">
                         <a class="dropdown-toggle" style="text-transform: capitalize">
                             {{regionService.region}} 
