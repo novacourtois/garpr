@@ -1,6 +1,12 @@
 <!DOCTYPE html>
 <html ng-app="myApp">
     <head>
+        <meta name="google-signin-clientid" content="919255380022-ru8qm5jqe3nucmqeoa236g6vl2jukstp.apps.googleusercontent.com" />
+        <meta name="google-signin-scope" content="https://www.googleapis.com/auth/plus.login" />
+        <meta name="google-signin-cookiepolicy" content="single_host_origin" />
+        <meta name="google-signin-callback" content="signinCallback" />
+        <meta name="google-signin-accesstype" content="online" />
+
         <!-- Latest compiled and minified CSS -->
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
 
@@ -14,8 +20,7 @@
         <script src="http://angular-ui.github.io/bootstrap/ui-bootstrap-tpls-0.11.2.js"></script>
         <script src="lib/angulartics.js"></script>
         <script src="lib/angulartics-ga.js"></script>
-        <script src="https://apis.google.com/js/client:platform.js" async defer></script>
-        <script src="lib/google-plus-signin.js"></script>
+        <script src="https://apis.google.com/js/client:platform.js" async defer> </script>
         <script src="script.js"></script>
     </head>
     <body>
@@ -47,10 +52,10 @@
                             {{userService.loggedIn ? userService.email : 'Login'}}
                             <span class="caret"></span>
                         </a>
-                        <ul class="dropdown-menu" role="menu">
-                            <li ng-show="userService.loggedIn" ng-click="logOut()">Logout</li>
+                        <ul id="login-menu" class="dropdown-menu" role="menu">
+                            <li ng-show="userService.loggedIn" ng-click="googleLogOut()"><a href="javascript:void(0)">Logout</a></li>
                             <li ng-hide="userService.loggedIn">
-                                <google-plus-signin clientid="919255380022-ru8qm5jqe3nucmqeoa236g6vl2jukstp.apps.googleusercontent.com">
+                                <a href="javascript:void(0)" ng-click="googleLogIn()">Log in with Google</a>
                             </li>
                         </ul>
                     </li>

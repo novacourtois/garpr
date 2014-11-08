@@ -1,4 +1,4 @@
-var app = angular.module('myApp', ['ngRoute', 'ui.bootstrap', 'angulartics', 'angulartics.google.analytics', 'directive.g+signin']);
+var app = angular.module('myApp', ['ngRoute', 'ui.bootstrap', 'angulartics', 'angulartics.google.analytics']);
 
 app.service('RegionService', function ($http, PlayerService, TournamentService, RankingsService) {
     var service = {
@@ -73,12 +73,11 @@ app.service('UserService', function () {
         authResult: null,
         idToken: null,
         email: null,
-        updateWithAuthResult: function (authResult) {
-            console.log('updateWithAuthResult');
+        updateWithAuthResult: function (authResult, email) {
             this.loggedIn = true;
             this.authResult = authResult;
             this.idToken = authResult.id_token;
-            this.email = 'test@test.com'; // TODO change
+            this.email = email;
         },
         logOut: function () {
             this.loggedIn = false;
@@ -133,24 +132,37 @@ app.controller("NavbarController", function($scope, $route, RegionService) {
 
 app.controller("UserController", function($scope, $route, UserService) {
     $scope.userService = UserService;
-    
-    $scope.logOut = function () {
-        console.log('before sign out');
-        gapi.auth.signOut();
-        $scope.userService.logOut();
-        console.log('after sign out');
+
+    $scope.processAuthResult = function(authResult) {
+        if (authResult.status.signed_in) {
+            //gapi.client.request({path: '/plus/v1/people/me'}).then(function(resp) {
+            //    $scope.logIn(authResult, resp.result.emails[0].value);
+            //});
+                $scope.logIn(authResult, 'test@test.com');
+        }
+        else {
+            $scope.logOut();
+        }
     };
 
-    $scope.$on('event:google-plus-signin-success', function (event, authResult) {
+    $scope.googleLogIn = function() {
+        gapi.auth.signIn({'accesstype': 'offline'});
+    };
+
+    $scope.googleLogOut = function() {
+        gapi.auth.signOut();
+    };
+
+    $scope.logIn = function(authResult) {
+        console.log('logIn');
         UserService.updateWithAuthResult(authResult);
         $scope.$apply();
-        console.log(authResult);
-        console.log(UserService.idToken);
-        // Send login to server or save into cookie
-    });
-    $scope.$on('event:google-plus-signin-failure', function (event, authResult) {
-        // Auth failure or signout detected
-    });
+    };
+
+    $scope.logOut = function () {
+        console.log('logOut');
+        $scope.userService.logOut();
+    };
 });
 
 app.controller("RankingsController", function($scope, $http, $routeParams, RegionService, RankingsService) {
@@ -236,3 +248,9 @@ app.controller("HeadToHeadController", function($scope, $http, $routeParams, Reg
         return false;
     };
 });
+
+function signinCallback(authResult) {
+    console.log('callback');
+    console.log(authResult);
+    angular.element(document.getElementById('login-menu')).scope().processAuthResult(authResult);
+};
