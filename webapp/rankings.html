@@ -8,7 +8,11 @@
         <tr ng-repeat="line in rankingsService.rankingsList.ranking">
             <td>{{line.rank}}</td>
             <td><a href="#/{{regionService.region}}/players/{{line.id}}">{{line.name}}</a></td>
-            <td>{{line.rating | number:3}}</td>
+            <td>{{line.rating | number:3}}
+                <span style="padding-left:5px" ng-show="line.rating != line.previous_rating">
+                    <i class="rating_arrow fa ng-class={'fa-arrow-up': line.rating > line.previous_rating, 'fa-arrow-down': line.rating < line.previous_rating}"></i>
+                </span>
+            </td>
         </tr>
     </table>
 </div>
