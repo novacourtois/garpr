@@ -92,6 +92,7 @@ class Player(object):
         self.aliases = aliases
         self.rating = rating
         self.exclude = exclude
+        self.previous_rating = 0
 
     def __str__(self):
         return "%s %s %s %s Excluded: %s" % (self.id, self.name, self.rating, self.aliases, self.exclude)
